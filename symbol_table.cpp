@@ -28,17 +28,17 @@ bool SymbolTable::addSymbols(string id, SemSymbol* sym){
 	}
 	else
 	{
-		getTopScope()->add(id, sym);
+		getTopScope()->addToTable(id, sym);
 		return true;
 	}
 }
 
-auto ScopeTable::findSymbol(string s)
+SemSymbol* ScopeTable::findSymbol(string s)
 {
 	auto lookup = symbols->find(s);
 	if(lookup != symbols->end())
 	{
-		return lookup->second();
+		return lookup->second;
 	}
 	else
 	{
@@ -46,18 +46,18 @@ auto ScopeTable::findSymbol(string s)
 	}
 }
 
-bool scopesEmpty(){
+bool SymbolTable::scopesEmpty(){
 		return(scopeTableChain->empty());
 }
 
-ScopeTable* buildScope(){
+ScopeTable* SymbolTable::buildScope(){
 	ScopeTable* s = new ScopeTable();
 	scopeTableChain->push_front(s);
 	return s;
 }
 
-ScopeTable* popScope(){
-	if(!scopesExist())
+ScopeTable* SymbolTable::popScope(){
+	if(!scopesEmpty())
 	{
 		ScopeTable* s = scopeTableChain->front();
 		scopeTableChain->pop_front();
@@ -66,15 +66,15 @@ ScopeTable* popScope(){
 	return NULL;
 }
 
-ScopeTable* getTopScope(){
-	if(!scopesExist())
+ScopeTable* SymbolTable::getTopScope(){
+	if(!scopesEmpty())
 	{
 		return scopeTableChain->front();
 	}
 	return NULL;
 }
 
-SemSymbol* findID(string id){
+SemSymbol* SymbolTable::findID(string id){
 	for(auto scp : *scopeTableChain)
 	{
 		SemSymbol* s = scp->findSymbol(id);

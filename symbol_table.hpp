@@ -23,20 +23,21 @@ class SemSymbol {
 	// each semantic symbol should track
 	// (i.e. the kind of the symbol (either a variable or function)
 	// and functions to get/set those fields
+	public:
 	SemSymbol(string sym, string dType){
-		type = dTsype;
+		type = dType;
 		sym = symType;
 	}
-public:
+
 	string type;
-	string symType //var or fn
+	string symType; //var or fn
 
 
 };
 
 class VarSym : public SemSymbol{
 public:
-		VarSym(string t, string n) {type = t; name = n;}
+		VarSym(string t, string n) : SemSymbol(t,n) {type = t; name = n;}
 		string type;
 		string name;
 
@@ -44,7 +45,7 @@ public:
 
 class FnSym : public SemSymbol{
 public:
-	 FnSym(list<string> args, string t, string n){
+	 FnSym(list<string> args, string t, string n) : SemSymbol(t,n) {
 		 for(auto i : args)
 		 {
 			 argTypes.push_back(i);
@@ -52,7 +53,7 @@ public:
 		 retType = t;
 		 name = n;
 	 }
-	 list<string> argTypes;
+	 list<string> argTypes; //list of arguments to function
 	 string retType;
 	 string name;
 };
@@ -70,8 +71,8 @@ class ScopeTable {
 		// and/or returning information to indicate
 		// that the symbol does not exist within the
 		// current scope.
-		auto findSymbol(string s);
-		bool addToTable(strind id, SemSymbol* sym);
+		SemSymbol* findSymbol(string s);
+		bool addToTable(string id, SemSymbol* sym);
 		HashMap<std::string, SemSymbol*>* getSymbols() {return (symbols);}
 	private:
 		HashMap<std::string, SemSymbol *> * symbols;
