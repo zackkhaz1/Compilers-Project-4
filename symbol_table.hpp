@@ -23,6 +23,7 @@ class SemSymbol {
 	// each semantic symbol should track
 	// (i.e. the kind of the symbol (either a variable or function)
 	// and functions to get/set those fields
+	SemSymbol(string name, DataType* typeIn)
 public:
 	VarSym vs;
 	FnSym fs;
@@ -56,7 +57,7 @@ class ScopeTable {
 		// and/or returning information to indicate
 		// that the symbol does not exist within the
 		// current scope.
-		auto findSymbol(string s) {return (symbols->find(s));}
+		auto findSymbol(string s);
 		HashMap<std::string, SemSymbol*>* getSymbols() {return (symbols);}
 	private:
 		HashMap<std::string, SemSymbol *> * symbols;
@@ -65,6 +66,16 @@ class ScopeTable {
 class SymbolTable{
 	public:
 		SymbolTable();
+
+		bool scopesExist();
+
+		ScopeTable* buildScope();
+
+		ScopeTable* popScope();
+
+		ScopeTable* checkScope();
+
+		SemSymbol* findID(string id);
 		//TODO: add functions to create a new ScopeTable
 		// when a new scope is entered, drop a ScopeTable
 		// when a scope is exited, etc.
