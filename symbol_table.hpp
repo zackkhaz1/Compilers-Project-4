@@ -23,16 +23,20 @@ class SemSymbol {
 	// each semantic symbol should track
 	// (i.e. the kind of the symbol (either a variable or function)
 	// and functions to get/set those fields
-	SemSymbol(string name, DataType* typeIn)
+	SemSymbol(string sym, string dType){
+		type = dTsype;
+		sym = symType;
+	}
 public:
-	VarSym vs;
-	FnSym fs;
+	string type;
+	string symType //var or fn
 
 
 };
 
 class VarSym : public SemSymbol{
 public:
+		VarSym(string t, string n) {type = t; name = n;}
 		string type;
 		string name;
 
@@ -40,7 +44,16 @@ public:
 
 class FnSym : public SemSymbol{
 public:
-	 string type;
+	 FnSym(list<string> args, string t, string n){
+		 for(auto i : args)
+		 {
+			 argTypes.push_back(i);
+		 }
+		 retType = t;
+		 name = n;
+	 }
+	 list<string> argTypes;
+	 string retType;
 	 string name;
 };
 
