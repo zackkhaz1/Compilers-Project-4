@@ -5,17 +5,35 @@ ScopeTable::ScopeTable(){
 	symbols = new HashMap<std::string, SemSymbol *>();
 }
 
+
+bool ScopeTable::addToTable(string id, SemSymbol* sym){
+	SemSymbol* check = findSymbol(id);
+	//Add invalid type error for check variable
+	//Add multiple declaration error if symbol already exists
+	//return false if either multiple declaration or invalid type is true
+	//and throw the appropriate error types
+	symbols->insert({id, sym});
+	return true;
+}
+
 SymbolTable::SymbolTable(){
-	//TODO: implement the list of hashtables approach
-	// to building a symbol table:
-	// Upon entry to a scope a new scope table will be
-	// entered into the front of the chain and upon exit the
-	// latest scope table will be removed from the front of
-	// the chain.
+
 	scopeTableChain = new std::list<ScopeTable *>();
 }
 
-auto findSymbol(string s)
+bool SymbolTable::addSymbols(string id, SemSymbol* sym){
+	if(scopesEmpty())
+	{
+		return false;
+	}
+	else
+	{
+		getTopScope()->add(id, sym);
+		return true;
+	}
+}
+
+auto ScopeTable::findSymbol(string s)
 {
 	auto lookup = symbols->find(s);
 	if(lookup != symbols->end())
@@ -28,7 +46,7 @@ auto findSymbol(string s)
 	}
 }
 
-bool scopesExist(){
+bool scopesEmpty(){
 		return(scopeTableChain->empty());
 }
 
@@ -48,7 +66,7 @@ ScopeTable* popScope(){
 	return NULL;
 }
 
-ScopeTable* checkScope(){
+ScopeTable* getTopScope(){
 	if(!scopesExist())
 	{
 		return scopeTableChain->front();

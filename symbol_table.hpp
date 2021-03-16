@@ -58,6 +58,7 @@ class ScopeTable {
 		// that the symbol does not exist within the
 		// current scope.
 		auto findSymbol(string s);
+		bool addToTable(strind id, SemSymbol* sym);
 		HashMap<std::string, SemSymbol*>* getSymbols() {return (symbols);}
 	private:
 		HashMap<std::string, SemSymbol *> * symbols;
@@ -67,15 +68,17 @@ class SymbolTable{
 	public:
 		SymbolTable();
 
-		bool scopesExist();
+		bool scopesEmpty();
 
 		ScopeTable* buildScope();
 
 		ScopeTable* popScope();
 
-		ScopeTable* checkScope();
+		ScopeTable* getTopScope();
 
 		SemSymbol* findID(string id);
+
+		bool addSymbols(string id, SemSymbol* sym);
 		//TODO: add functions to create a new ScopeTable
 		// when a new scope is entered, drop a ScopeTable
 		// when a scope is exited, etc.
