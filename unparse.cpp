@@ -1,5 +1,6 @@
 #include "ast.hpp"
 #include "errors.hpp"
+#include "symbol_table.hpp"
 
 namespace crona{
 
@@ -306,6 +307,11 @@ void IDNode::unparse(std::ostream& out, int indent){
 	out << name;
 	//TODO: you'll need to add some code here to
 	// print the symbol if it isn't null
+	if (mySymbol != NULL) {
+		out << '(';
+		out << mySymbol->getType();
+		out << ')';
+	}
 }
 
 void HavocNode::unparse(std::ostream& out, int indent){

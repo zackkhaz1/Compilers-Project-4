@@ -139,6 +139,7 @@ public:
 	  myID(idIn), myRetType(retTypeIn),
 	  myFormals(formalsIn), myBody(bodyIn){ }
 	IDNode * ID() const { return myID; }
+	TypeNode * getTypeNode() { return myRetType; }
 	std::list<FormalDeclNode *> * getFormals() const{
 		return myFormals;
 	}
@@ -267,6 +268,7 @@ class BinaryExpNode : public ExpNode{
 public:
 	BinaryExpNode(size_t lIn, size_t cIn, ExpNode * lhs, ExpNode * rhs)
 	: ExpNode(lIn, cIn), myExp1(lhs), myExp2(rhs) { }
+	virtual bool nameAnalysis(SymbolTable *) override;
 
 protected:
 	ExpNode * myExp1;
@@ -366,6 +368,7 @@ public:
 		this->myExp = expIn;
 	}
 	virtual void unparse(std::ostream& out, int indent) override = 0;
+	virtual bool nameAnalysis(SymbolTable *) override;
 protected:
 	ExpNode * myExp;
 };

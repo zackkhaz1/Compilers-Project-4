@@ -9,22 +9,12 @@ namespace crona{
 // of any AST
 
 static bool listAnalysis(std::list<StmtNode*>* stmtList, SymbolTable* symTab){
-	bool valid = true;
+	bool isValid = true;
 	for(auto i : *stmtList)
 	{
-		valid = i->nameAnalysis(symTab) && valid;
+		isValid = i->nameAnalysis(symTab) && isValid;
 	}
-	return valid;
-
-}
-
-static bool expAnal(std::list<ExpNode*>* expList, SymbolTable* symTab){
-	bool valid = true;
-	for(auto i : *expList)
-	{
-		valid = i->nameAnalysis(symTab) && valid;
-	}
-	return valid;
+	return isValid;
 }
 
 bool ASTNode::nameAnalysis(SymbolTable * symTab){
@@ -33,12 +23,13 @@ bool ASTNode::nameAnalysis(SymbolTable * symTab){
 }
 
 bool ProgramNode::nameAnalysis(SymbolTable * symTab){
-	bool res = true;
+	bool nameAnalysisOk = true;
 	symTab->buildScope();
 	for (auto global : *myGlobals){
-		res = global->nameAnalysis(symTab) && res;
+		nameAnalysisOk = global->nameAnalysis(symTab) && nameAnalysisOk;
 	}
-	return res;
+	symTab->popScope();
+	return nameAnalysisOk;
 }
 
 
@@ -64,11 +55,32 @@ bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 
 bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
-	throw new ToDoError("[DELETE ME] I'm an fnDecl."
-		" you should add and make current a new"
-		" scope table for my body"
-	);
-	return nameAnalysisOk;
+	bool bodyisOk = true;
+
+	std::string id = this->ID()->getName();
+	std::string type = this->getTypeNode()->getType();
+
+	std::list<string> args;
+
+	FnSym *newSym = new FnSym(args, type, id); 
+
+	// Might need constraints in case of errors
+	
+	symTab->buildScope();
+	for (FormalDeclNode* formal : *myFormals) {
+		nameAnalysisOk = formal->nameAnalysis(symTab) && nameAnalysisOk;
+		TypeNode * typeNode = formal->getTypeNode();
+		newSym->argTypes.push_back(typeNode->getType());
+	}
+
+	// Make sure function body statements are ok
+	for (auto stmt : *myBody){
+		bodyisOk = stmt->nameAnalysis(symTab) && bodyisOk;
+	}
+
+	symTab->popScope();
+
+	return nameAnalysisOk && bodyisOk;
 }
 
 bool WriteStmtNode::nameAnalysis(SymbolTable* symTab){
@@ -96,38 +108,37 @@ bool PostIncStmtNode::nameAnalysis(SymbolTable* symTab){
 }
 
 bool IfStmtNode::nameAnalysis(SymbolTable* symTab){
-	bool v = true;
-	v = myCond->nameAnalysis(symTab) && v;
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
 	symTab->buildScope();
-	v = listAnalysis(myBody, symTab) && v;
+	nameAnalysisOk = listAnalysis(myBody, symTab) && nameAnalysisOk;
 	symTab->popScope();
-	return v;
+	return nameAnalysisOk;
 }
 
 bool IfElseStmtNode::nameAnalysis(SymbolTable* symTab){
-	bool v = true;
+	bool nameAnalysisOk = true;
 	//True body
-	v = myCond->nameAnalysis(symTab) && v;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
 	symTab->buildScope();
-	v = listAnalysis(myBodyTrue, symTab) && v;
+	nameAnalysisOk = listAnalysis(myBodyTrue, symTab) && nameAnalysisOk;
 	symTab->popScope();
 	//false body
 	symTab->buildScope();
-	v = listAnalysis(myBodyFalse, symTab) && v;
+	nameAnalysisOk = listAnalysis(myBodyFalse, symTab) && nameAnalysisOk;
 	symTab->popScope();
 
-	return v;
-
+	return nameAnalysisOk;
 }
 
 bool WhileStmtNode::nameAnalysis(SymbolTable * symTab){
-	bool v = true;
+	bool nameAnalysisOk = true;
 	//True body
-	v = myCond->nameAnalysis(symTab) && v;
+	nameAnalysisOk = myCond->nameAnalysis(symTab) && nameAnalysisOk;
 	symTab->buildScope();
-	v = listAnalysis(myBody, symTab) && v;
+	nameAnalysisOk = listAnalysis(myBody, symTab) && nameAnalysisOk;
 	symTab->popScope();
-	return v;
+	return nameAnalysisOk;
 }
 
 bool ReturnStmtNode::nameAnalysis(SymbolTable* symTab){
@@ -135,8 +146,12 @@ bool ReturnStmtNode::nameAnalysis(SymbolTable* symTab){
 }
 
 bool CallExpNode::nameAnalysis(SymbolTable* symTab){
-	return myID->nameAnalysis(symTab) && expAnal(myArgs,symTab);
-
+	bool nameAnalysisOk = true;
+	nameAnalysisOk = myID->nameAnalysis(symTab) && nameAnalysisOk;
+	for (auto arg : *myArgs) {
+		nameAnalysisOk = arg->nameAnalysis(symTab) && nameAnalysisOk;
+	}
+	return nameAnalysisOk;
 }
 
 bool CallStmtNode::nameAnalysis(SymbolTable* symTab){
@@ -154,6 +169,14 @@ bool IDNode::nameAnalysis(SymbolTable* symTab){
 			return false;
 		}
 		return true;
+}
+
+bool BinaryExpNode::nameAnalysis(SymbolTable* symTab){
+	return myExp1->nameAnalysis(symTab) && myExp2->nameAnalysis(symTab);
+}
+
+bool UnaryExpNode::nameAnalysis(SymbolTable* symTab){
+	return myExp->nameAnalysis(symTab);
 }
 
 }
