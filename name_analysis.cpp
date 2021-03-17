@@ -44,8 +44,21 @@ bool ProgramNode::nameAnalysis(SymbolTable * symTab){
 
 bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
-	string name = ID()->getName();
+	std::string id = this->ID()->getName();
+	std::string type = this->getTypeNode()->getType();
 
+	if (type == "void") {
+		Report::fatal(this->line(), this->col(), "Invalid type in declaration");
+		nameAnalysisOk = false;
+	}
+
+	if (symTab->findID(id) != NULL) {
+		Report::fatal(this->line(), this->col(), "Multiple declared identifier");
+		nameAnalysisOk = false;
+	}
+
+	VarSym *newSym = new VarSym(type, id);
+	symTab->addSymbols(id, newSym);
 	return nameAnalysisOk;
 }
 
@@ -135,9 +148,12 @@ bool AssignExpNode::nameAnalysis(SymbolTable* symTab){
 }
 
 bool IDNode::nameAnalysis(SymbolTable* symTab){
-		///TEMPORARY SO IT COMPILES
-		return false;
-
+		mySymbol = symTab->findID(name);
+		if (mySymbol == NULL) {
+			Report::fatal(this->line(), this->col(), "Undeclared identifier");
+			return false;
+		}
+		return true;
 }
 
 }

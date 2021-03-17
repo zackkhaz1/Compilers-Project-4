@@ -93,6 +93,7 @@ class TypeNode : public ASTNode{
 public:
 	TypeNode(size_t l, size_t c) : ASTNode(l, c){ }
 	void unparse(std::ostream&, int) override = 0;
+	virtual std::string getType() = 0;
 };
 
 
@@ -387,24 +388,28 @@ class VoidTypeNode : public TypeNode{
 public:
 	VoidTypeNode(size_t l, size_t c) : TypeNode(l, c){}
 	void unparse(std::ostream& out, int indent) override;
+	std::string getType() { return "void"; }
 };
 
 class IntTypeNode : public TypeNode{
 public:
 	IntTypeNode(size_t l, size_t c): TypeNode(l, c){}
 	void unparse(std::ostream& out, int indent) override;
+	std::string getType() { return "int"; }
 };
 
 class BoolTypeNode : public TypeNode{
 public:
 	BoolTypeNode(size_t l, size_t c): TypeNode(l, c) { }
 	void unparse(std::ostream& out, int indent) override;
+	std::string getType() { return "bool"; }
 };
 
 class ByteTypeNode : public TypeNode{
 public:
 	ByteTypeNode(size_t l, size_t c): TypeNode(l, c) { }
 	void unparse(std::ostream& out, int indent) override;
+	std::string getType() { return "byte"; }
 };
 
 class ArrayTypeNode : public TypeNode{
@@ -412,6 +417,7 @@ public:
 	ArrayTypeNode(size_t l, size_t c, TypeNode * base, size_t len): TypeNode(l, c), myLen(len), myBase(base){}
 	void unparse(std::ostream& out, int indent) override;
 	virtual TypeNode * getBase() { return myBase; }
+	std::string getType() { return "array"; }
 private:
 	size_t myLen;
 	TypeNode * myBase;
