@@ -1,5 +1,5 @@
-#ifndef HOLEYC_SYMBOL_TABLE_HPP
-#define HOLEYC_SYMBOL_TABLE_HPP
+#ifndef CRONA_SYMBOL_TABLE_HPP
+#define CRONA_SYMBOL_TABLE_HPP
 #include <string>
 #include <unordered_map>
 #include <list>

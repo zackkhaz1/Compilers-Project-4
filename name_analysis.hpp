@@ -1,5 +1,5 @@
-#ifndef HOLEYC_NAME_ANALYSIS
-#define HOLEYC_NAME_ANALYSIS
+#ifndef CRONA_NAME_ANALYSIS
+#define CRONA_NAME_ANALYSIS
 
 #include "ast.hpp"
 #include "symbol_table.hpp"

@@ -1,6 +1,7 @@
 #include "ast.hpp"
 #include "symbol_table.hpp"
 #include "errors.hpp"
+#include <iostream>
 
 namespace crona{
 
@@ -43,14 +44,15 @@ bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 		nameAnalysisOk = false;
 	}
 
-	if (symTab->findID(id) != NULL) {
+	if (symTab->getTopScope()->findSymbol(id) != NULL) {
 		Report::fatal(this->line(), this->col(), "Multiple declared identifier");
 		nameAnalysisOk = false;
 	}
 
 	VarSym *newSym = new VarSym(type, id);
-	symTab->addSymbols(id, newSym);
-	return nameAnalysisOk;
+	bool symbolAdded = symTab->addSymbols(id, newSym);
+	this->ID()->setSemSymbol(newSym);
+	return nameAnalysisOk && symbolAdded;
 }
 
 bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
@@ -163,12 +165,12 @@ bool AssignExpNode::nameAnalysis(SymbolTable* symTab){
 }
 
 bool IDNode::nameAnalysis(SymbolTable* symTab){
-		this->mySymbol = symTab->findID(this->getName());
-		if (mySymbol == NULL) {
-			Report::fatal(this->line(), this->col(), "Undeclared identifier");
-			return false;
-		}
-		return true;
+	this->mySymbol = symTab->findID(this->getName());
+	if (mySymbol == NULL) {
+		Report::fatal(this->line(), this->col(), "Undeclared identifier");
+		return false;
+	}
+	return true;
 }
 
 bool BinaryExpNode::nameAnalysis(SymbolTable* symTab){
