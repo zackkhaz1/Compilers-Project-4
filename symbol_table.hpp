@@ -24,9 +24,9 @@ class SemSymbol {
 	// (i.e. the kind of the symbol (either a variable or function)
 	// and functions to get/set those fields
 	public:
-	SemSymbol(string sym, string dType){
+	SemSymbol(string dType, string sym){
 		type = dType;
-		sym = symType;
+		symType = sym;
 	}
 	string getType() {return type;}
 	string getSymType() {return symType;}

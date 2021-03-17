@@ -68,7 +68,7 @@ public:
 class IDNode : public LValNode{
 public:
 	IDNode(size_t lIn, size_t cIn, std::string nameIn)
-	: LValNode(lIn, cIn), name(nameIn), mySymbol(nullptr){}
+	: LValNode(lIn, cIn), name(nameIn), mySymbol(NULL){}
 	std::string getName(){ return name; }
 	void unparse(std::ostream& out, int indent) override;
 	virtual bool nameAnalysis(SymbolTable *) override;

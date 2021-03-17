@@ -163,7 +163,7 @@ bool AssignExpNode::nameAnalysis(SymbolTable* symTab){
 }
 
 bool IDNode::nameAnalysis(SymbolTable* symTab){
-		mySymbol = symTab->findID(name);
+		this->mySymbol = symTab->findID(this->getName());
 		if (mySymbol == NULL) {
 			Report::fatal(this->line(), this->col(), "Undeclared identifier");
 			return false;
