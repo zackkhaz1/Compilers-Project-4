@@ -28,7 +28,9 @@ class SemSymbol {
 		type = dType;
 		sym = symType;
 	}
-
+	string getType() {return type;}
+	string getSymType() {return symType;}
+private:
 	string type;
 	string symType; //var or fn
 
