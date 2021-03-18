@@ -143,6 +143,10 @@ bool WhileStmtNode::nameAnalysis(SymbolTable * symTab){
 }
 
 bool ReturnStmtNode::nameAnalysis(SymbolTable* symTab){
+	// check if returnstmtnode doesn't have a value (for void functions)
+	if (myExp == NULL) {
+		return true;
+	}
 	return myExp->nameAnalysis(symTab);
 }
 

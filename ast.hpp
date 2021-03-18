@@ -422,7 +422,9 @@ public:
 	ArrayTypeNode(size_t l, size_t c, TypeNode * base, size_t len): TypeNode(l, c), myLen(len), myBase(base){}
 	void unparse(std::ostream& out, int indent) override;
 	virtual TypeNode * getBase() { return myBase; }
-	std::string getType() { return "array"; }
+	std::string getType() { 
+			return (myBase->getType() + " array [" + std::to_string(myLen) + "]"); 
+		}
 private:
 	size_t myLen;
 	TypeNode * myBase;
