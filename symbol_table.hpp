@@ -28,7 +28,7 @@ class SemSymbol {
 		type = dType;
 		symType = sym;
 	}
-	string getType() {return type;}
+	virtual string getType() = 0;
 	string getSymType() {return symType;}
 private:
 	string type;
@@ -42,7 +42,7 @@ public:
 		VarSym(string t, string n) : SemSymbol(t,n) {type = t; name = n;}
 		string type;
 		string name;
-
+	string getType() { return type; }
 };
 
 class FnSym : public SemSymbol{
@@ -58,6 +58,20 @@ public:
 	 list<string> argTypes; //list of arguments to function
 	 string retType;
 	 string name;
+	 string getType() {
+		 int count = 0;
+		 string concat = "";
+		 for (auto i : argTypes){
+			 count++;
+			 if(count == int(argTypes.size())){
+				concat = concat + i;
+				break;
+			 }
+			 concat = concat + i + ",";
+		 }
+		 concat = concat + "->" + retType;
+		 return concat;
+	 }
 };
 
 //A single scope. The symbol table is broken down into a

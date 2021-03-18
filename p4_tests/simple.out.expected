@@ -1,5 +1,5 @@
-bool glob;
-int main(){
-	int a;
+glob(bool):bool;
+main(->int):int(){
+	a(int):int;
 	glob(bool) = a(int);
 }

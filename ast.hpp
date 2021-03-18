@@ -95,6 +95,7 @@ public:
 	TypeNode(size_t l, size_t c) : ASTNode(l, c){ }
 	void unparse(std::ostream&, int) override = 0;
 	virtual std::string getType() = 0;
+	bool nameAnalysis(SymbolTable * symTab) override { return true; }
 };
 
 
@@ -482,6 +483,7 @@ public:
 		unparse(out, 0);
 	}
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override { return true; }
 };
 
 class FalseNode : public ExpNode{
@@ -491,6 +493,7 @@ public:
 		unparse(out, 0);
 	}
 	void unparse(std::ostream& out, int indent) override;
+	bool nameAnalysis(SymbolTable * symTab) override { return true; }
 };
 
 class CallStmtNode : public StmtNode{

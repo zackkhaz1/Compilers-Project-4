@@ -61,19 +61,18 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 
 	std::string id = this->ID()->getName();
 	std::string type = this->getTypeNode()->getType();
-
 	std::list<string> args;
 
-	FnSym *newSym = new FnSym(args, type, id); 
-
-	// Might need constraints in case of errors
-	
 	symTab->buildScope();
-	for (FormalDeclNode* formal : *myFormals) {
+	for (auto formal : *myFormals) {
 		nameAnalysisOk = formal->nameAnalysis(symTab) && nameAnalysisOk;
 		TypeNode * typeNode = formal->getTypeNode();
-		newSym->argTypes.push_back(typeNode->getType());
+		args.push_back(typeNode->getType());
 	}
+
+	FnSym *newSym = new FnSym(args, type, id); 
+	bool symbolAdded = symTab->addSymbols(id, newSym);
+	this->ID()->setSemSymbol(newSym);
 
 	// Make sure function body statements are ok
 	for (auto stmt : *myBody){
@@ -82,7 +81,7 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 
 	symTab->popScope();
 
-	return nameAnalysisOk && bodyisOk;
+	return nameAnalysisOk && symbolAdded && bodyisOk;
 }
 
 bool WriteStmtNode::nameAnalysis(SymbolTable* symTab){
@@ -165,12 +164,17 @@ bool AssignExpNode::nameAnalysis(SymbolTable* symTab){
 }
 
 bool IDNode::nameAnalysis(SymbolTable* symTab){
-	this->mySymbol = symTab->findID(this->getName());
-	if (mySymbol == NULL) {
-		Report::fatal(this->line(), this->col(), "Undeclared identifier");
-		return false;
+	bool nameAnalysisOk = true;
+	SemSymbol * tempSym = symTab->findID(this->getName());
+	if (tempSym == NULL) {
+		Report::fatal(this->line(), this->col(), "Undeclared identifier ");
+		nameAnalysisOk = false;
 	}
-	return true;
+	else {
+		this->mySymbol = tempSym;
+		nameAnalysisOk = true;
+	}
+	return nameAnalysisOk;
 }
 
 bool BinaryExpNode::nameAnalysis(SymbolTable* symTab){
