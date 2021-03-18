@@ -33,7 +33,6 @@ bool ProgramNode::nameAnalysis(SymbolTable * symTab){
 	return nameAnalysisOk;
 }
 
-
 bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool nameAnalysisOk = true;
 	std::string id = this->ID()->getName();
@@ -45,7 +44,7 @@ bool VarDeclNode::nameAnalysis(SymbolTable * symTab){
 	}
 
 	if (symTab->getTopScope()->findSymbol(id) != NULL) {
-		Report::fatal(this->line(), this->col(), "Multiple declared identifier");
+		Report::fatal(this->line(), this->col(), "Multiply declared identifier");
 		nameAnalysisOk = false;
 	}
 
@@ -63,7 +62,6 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	std::string type = this->getTypeNode()->getType();
 	std::list<string> args;
 
-	symTab->buildScope();
 	for (auto formal : *myFormals) {
 		nameAnalysisOk = formal->nameAnalysis(symTab) && nameAnalysisOk;
 		TypeNode * typeNode = formal->getTypeNode();
@@ -74,10 +72,10 @@ bool FnDeclNode::nameAnalysis(SymbolTable * symTab){
 	bool symbolAdded = symTab->addSymbols(id, newSym);
 	this->ID()->setSemSymbol(newSym);
 
+	symTab->buildScope();
+
 	// Make sure function body statements are ok
-	for (auto stmt : *myBody){
-		bodyisOk = stmt->nameAnalysis(symTab) && bodyisOk;
-	}
+	bodyisOk = listAnalysis(myBody, symTab) && bodyisOk;
 
 	symTab->popScope();
 
